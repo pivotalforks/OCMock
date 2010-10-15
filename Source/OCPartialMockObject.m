@@ -1,13 +1,19 @@
 //---------------------------------------------------------------------------------------
-//  $Id: $
+//  $Id: OCPartialMockObject.m 68 2010-08-20 13:20:52Z erik $
 //  Copyright (c) 2009 by Mulle Kybernetik. See License file for details.
 //---------------------------------------------------------------------------------------
 
 #import <objc/runtime.h>
-#import <objc/message.h>
 #import "OCPartialMockRecorder.h"
 #import "OCPartialMockObject.h"
 
+
+@interface OCPartialMockObject (Private)
+- (void)forwardInvocationForRealObject:(NSInvocation *)anInvocation;
+@end 
+
+
+NSString *OCMRealMethodAliasPrefix = @"ocmock_replaced_";
 
 @implementation OCPartialMockObject
 
@@ -79,11 +85,11 @@ static NSMutableDictionary *mockTable;
 {
 	Class realClass = [anObject class];
 	double timestamp = [NSDate timeIntervalSinceReferenceDate];
-	const char *className = [[NSString stringWithFormat:@"%@-%p-%f", realClass, anObject, timestamp] cString];
+	const char *className = [[NSString stringWithFormat:@"%@-%p-%f", realClass, anObject, timestamp] cString]; 
 	Class subclass = objc_allocateClassPair(realClass, className, 0);
 	objc_registerClassPair(subclass);
 	object_setClass(anObject, subclass);
-
+	
 	Method forwardInvocationMethod = class_getInstanceMethod([self class], @selector(forwardInvocationForRealObject:));
 	IMP forwardInvocationImp = method_getImplementation(forwardInvocationMethod);
 	const char *forwardInvocationTypes = method_getTypeEncoding(forwardInvocationMethod);
@@ -93,9 +99,14 @@ static NSMutableDictionary *mockTable;
 - (void)setupForwarderForSelector:(SEL)selector
 {
 	Class subclass = [[self realObject] class];
-	Method originalMethod = class_getInstanceMethod(subclass, selector);
+	Method originalMethod = class_getInstanceMethod([subclass superclass], selector);
+	IMP originalImp = method_getImplementation(originalMethod);
+
 	IMP forwarderImp = [subclass instanceMethodForSelector:@selector(aMethodThatMustNotExist)];
-	class_addMethod(subclass, method_getName(originalMethod), forwarderImp, method_getTypeEncoding(originalMethod));
+	class_addMethod(subclass, method_getName(originalMethod), forwarderImp, method_getTypeEncoding(originalMethod)); 
+
+	SEL aliasSelector = NSSelectorFromString([OCMRealMethodAliasPrefix stringByAppendingString:NSStringFromSelector(selector)]);
+	class_addMethod(subclass, aliasSelector, originalImp, method_getTypeEncoding(originalMethod));
 }
 
 - (void)forwardInvocationForRealObject:(NSInvocation *)anInvocation

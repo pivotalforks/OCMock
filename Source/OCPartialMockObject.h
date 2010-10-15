@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------------------------
-//  $Id: $
+//  $Id: OCPartialMockObject.h 68 2010-08-20 13:20:52Z erik $
 //  Copyright (c) 2009 by Mulle Kybernetik. See License file for details.
 //---------------------------------------------------------------------------------------
 
@@ -18,3 +18,6 @@
 - (void)setupForwarderForSelector:(SEL)selector;
 
 @end
+
+
+extern NSString *OCMRealMethodAliasPrefix;

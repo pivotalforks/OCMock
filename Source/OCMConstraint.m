@@ -1,9 +1,10 @@
 //---------------------------------------------------------------------------------------
-//  $Id$
+//  $Id: OCMConstraint.m 57 2010-07-19 06:14:27Z erik $
 //  Copyright (c) 2007-2010 by Mulle Kybernetik. See License file for details.
 //---------------------------------------------------------------------------------------
 
 #import <OCMock/OCMConstraint.h>
+
 
 @implementation OCMConstraint
 
@@ -21,7 +22,7 @@
 + (id)constraintWithSelector:(SEL)aSelector onObject:(id)anObject
 {
 	OCMInvocationConstraint *constraint = [OCMInvocationConstraint constraint];
-	NSMethodSignature *signature = [anObject methodSignatureForSelector:aSelector];
+	NSMethodSignature *signature = [anObject methodSignatureForSelector:aSelector]; 
 	if(signature == nil)
 		[NSException raise:NSInvalidArgumentException format:@"Unkown selector %@ used in constraint.", NSStringFromSelector(aSelector)];
 	NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
@@ -114,7 +115,7 @@
 
 #pragma mark  -
 
-#ifdef MAC_OS_X_VERSION_10_6
+#if NS_BLOCKS_AVAILABLE
 
 @implementation OCMBlockConstraint
 
@@ -125,7 +126,7 @@
 	return self;
 }
 
-- (BOOL)evaluate:(id)value
+- (BOOL)evaluate:(id)value 
 {
 	return block(value);
 }

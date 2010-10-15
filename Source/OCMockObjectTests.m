@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------------------------
-//  $Id$
+//  $Id: OCMockObjectTests.m 69 2010-08-20 16:05:58Z erik $
 //  Copyright (c) 2004-2010 by Mulle Kybernetik. See License file for details.
 //---------------------------------------------------------------------------------------
 
@@ -111,7 +111,15 @@ static NSString *TestNotification = @"TestNotification";
 	[mock hasSuffix:@"bar"];
 }
 
-#ifdef MAC_OS_X_VERSION_10_6
+#if NS_BLOCKS_AVAILABLE
+
+- (void)testAcceptsStubbedMethodWithBlockArgument
+{
+	mock = [OCMockObject mockForClass:[NSArray class]];
+	[[mock stub] indexesOfObjectsPassingTest:[OCMArg any]];
+	[mock indexesOfObjectsPassingTest:^(id obj, NSUInteger idx, BOOL *stop) { return YES; }];
+}
+
 
 - (void)testAcceptsStubbedMethodWithBlockConstraint
 {
@@ -354,7 +362,7 @@ static NSString *TestNotification = @"TestNotification";
 	STAssertEqualObjects(@"[FOO, 1]", returnValue, @"Should have passed and returned invocation.");
 }
 
-#ifdef MAC_OS_X_VERSION_10_6
+#if NS_BLOCKS_AVAILABLE
 
 - (void)testCallsBlockWhichCanSetUpReturnValue
 {
@@ -373,6 +381,34 @@ static NSString *TestNotification = @"TestNotification";
 }
 
 #endif
+
+- (void)testThrowsWhenTryingToUseForwardToRealObjectOnNonPartialMock
+{
+	STAssertThrows([[[mock expect] andForwardToRealObject] method2], @"Should have raised and exception.");
+}
+
+- (void)testForwardsToRealObjectWhenSetUpAndCalledOnMock
+{
+	TestClassThatCallsSelf *realObject = [[[TestClassThatCallsSelf alloc] init] autorelease];
+	mock = [OCMockObject partialMockForObject:realObject];
+
+	[[[mock expect] andForwardToRealObject] method2];
+	STAssertEquals(@"Foo", [mock method2], @"Should have called method on real object.");
+
+	[mock verify];
+}
+
+- (void)testForwardsToRealObjectWhenSetUpAndCalledOnRealObject
+{
+	TestClassThatCallsSelf *realObject = [[[TestClassThatCallsSelf alloc] init] autorelease];
+	mock = [OCMockObject partialMockForObject:realObject];
+	
+	[[[mock expect] andForwardToRealObject] method2];
+	STAssertEquals(@"Foo", [realObject method2], @"Should have called method on real object.");
+	
+	[mock verify];
+}
+
 
 // --------------------------------------------------------------------------------------
 //	returning values in pass-by-reference arguments
@@ -530,6 +566,19 @@ static NSString *TestNotification = @"TestNotification";
 	[[mock expect] uppercaseString];
 	
 	STAssertThrows([mock uppercaseString], @"Should have complained about wrong sequence.");
+}
+
+
+// --------------------------------------------------------------------------------------
+//	explicitly rejecting methods (mostly for nice mocks, see below)
+// --------------------------------------------------------------------------------------
+
+- (void)testThrowsWhenRejectedMethodIsCalledOnNiceMock
+{
+	mock = [OCMockObject niceMockForClass:[NSString class]];
+	
+	[[mock reject] uppercaseString];
+	STAssertThrows([mock uppercaseString], @"Should have complained about rejected method being called.");
 }
 
 
@@ -733,6 +782,21 @@ static NSString *TestNotification = @"TestNotification";
 	@try
 	{
 		[mock lowercaseString];
+	}
+	@catch(NSException *exception)
+	{
+		// expected
+	}
+	STAssertThrows([mock verify], @"Should have reraised the exception.");
+}
+
+- (void)testReRaisesRejectExceptionsOnVerify
+{
+	mock = [OCMockObject niceMockForClass:[NSString class]];
+	[[mock reject] uppercaseString];
+	@try
+	{
+		[mock uppercaseString];
 	}
 	@catch(NSException *exception)
 	{
