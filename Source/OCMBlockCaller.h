@@ -5,9 +5,7 @@
 
 #import <Foundation/Foundation.h>
 
-#if NS_BLOCKS_AVAILABLE
-
-@interface OCMBlockCaller : NSObject 
+@interface OCMBlockCaller : NSObject
 {
 	void (^block)(NSInvocation *);
 }
@@ -17,5 +15,3 @@
 - (void)handleInvocation:(NSInvocation *)anInvocation;
 
 @end
-
-#endif

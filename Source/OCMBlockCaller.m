@@ -5,18 +5,16 @@
 
 #import "OCMBlockCaller.h"
 
-#if NS_BLOCKS_AVAILABLE
-
 @implementation OCMBlockCaller
 
--(id)initWithCallBlock:(void (^)(NSInvocation *))theBlock 
+-(id)initWithCallBlock:(void (^)(NSInvocation *))theBlock
 {
 	[super init];
 	block = [theBlock copy];
 	return self;
 }
 
--(void)dealloc 
+-(void)dealloc
 {
 	[block release];
 	[super dealloc];
@@ -28,5 +26,3 @@
 }
 
 @end
-
-#endif

@@ -17,36 +17,36 @@
 - (void)testAnyAcceptsAnything
 {
 	OCMConstraint *constraint = [OCMAnyConstraint constraint];
-	
+
 	STAssertTrue([constraint evaluate:@"foo"], @"Should have accepted a value.");
 	STAssertTrue([constraint evaluate:@"foo"], @"Should have accepted another value.");
-	STAssertTrue([constraint evaluate:@"foo"], @"Should have accepted nil.");	
+	STAssertTrue([constraint evaluate:@"foo"], @"Should have accepted nil.");
 }
 
 - (void)testIsNilAcceptsOnlyNil
 {
 	OCMConstraint *constraint = [OCMIsNilConstraint constraint];
-	
+
 	STAssertFalse([constraint evaluate:@"foo"], @"Should not have accepted a value.");
-	STAssertTrue([constraint evaluate:nil], @"Should have accepted nil.");	
+	STAssertTrue([constraint evaluate:nil], @"Should have accepted nil.");
 }
 
 - (void)testIsNotNilAcceptsAnythingButNil
 {
 	OCMConstraint *constraint = [OCMIsNotNilConstraint constraint];
-	
+
 	STAssertTrue([constraint evaluate:@"foo"], @"Should have accepted a value.");
-	STAssertFalse([constraint evaluate:nil], @"Should not have accepted nil.");	
+	STAssertFalse([constraint evaluate:nil], @"Should not have accepted nil.");
 }
 
 - (void)testNotEqualAcceptsAnythingButValue
 {
 	OCMIsNotEqualConstraint *constraint = [OCMIsNotEqualConstraint constraint];
 	constraint->testValue = @"foo";
-	
+
 	STAssertFalse([constraint evaluate:@"foo"], @"Should not have accepted value.");
-	STAssertTrue([constraint evaluate:@"bar"], @"Should have accepted other value.");	
-	STAssertTrue([constraint evaluate:nil], @"Should have accepted nil.");	
+	STAssertTrue([constraint evaluate:@"bar"], @"Should have accepted other value.");
+	STAssertTrue([constraint evaluate:nil], @"Should have accepted nil.");
 }
 
 
@@ -90,11 +90,8 @@
 
 - (void)testRaisesExceptionOnUnknownSelector
 {
-	STAssertThrows(CONSTRAINTV(@selector(checkArgXXX:), @"bar"), @"Should have thrown for unknown constraint method.");	
+	STAssertThrows(CONSTRAINTV(@selector(checkArgXXX:), @"bar"), @"Should have thrown for unknown constraint method.");
 }
-
-
-#if NS_BLOCKS_AVAILABLE
 
 -(void)testUsesBlock
 {
@@ -102,14 +99,14 @@
 		{
 			return [value isEqualToString:@"foo"];
 		};
-	
+
 	OCMBlockConstraint *constraint = [[[OCMBlockConstraint alloc] initWithConstraintBlock:checkForFooBlock] autorelease];
 
 	STAssertTrue([constraint evaluate:@"foo"], @"Should have accepted foo.");
 	STAssertFalse([constraint evaluate:@"bar"], @"Should not have accepted bar.");
 }
 
--(void)testBlockConstraintCanCaptureArgument 
+-(void)testBlockConstraintCanCaptureArgument
 {
 	__block NSString *captured;
 	BOOL (^captureArgBlock)(id) = ^(id value)
@@ -117,7 +114,7 @@
 			captured = value;
 			return YES;
 		};
-	
+
 	OCMBlockConstraint *constraint = [[[OCMBlockConstraint alloc] initWithConstraintBlock:captureArgBlock] autorelease];
 
 	[constraint evaluate:@"foo"];
@@ -125,7 +122,5 @@
 	[constraint evaluate:@"bar"];
 	STAssertEqualObjects(@"bar", captured, @"Should have captured value from last invocation.");
 }
-
-#endif
 
 @end

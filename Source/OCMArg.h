@@ -5,7 +5,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface OCMArg : NSObject 
+@interface OCMArg : NSObject
 
 // constraining arguments
 
@@ -15,9 +15,7 @@
 + (id)isNotNil;
 + (id)isNotEqual:(id)value;
 + (id)checkWithSelector:(SEL)selector onObject:(id)anObject;
-#if NS_BLOCKS_AVAILABLE
 + (id)checkWithBlock:(BOOL (^)(id))block;
-#endif
 
 // manipulating arguments
 

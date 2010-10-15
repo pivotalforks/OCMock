@@ -22,7 +22,7 @@
 + (id)constraintWithSelector:(SEL)aSelector onObject:(id)anObject
 {
 	OCMInvocationConstraint *constraint = [OCMInvocationConstraint constraint];
-	NSMethodSignature *signature = [anObject methodSignatureForSelector:aSelector]; 
+	NSMethodSignature *signature = [anObject methodSignatureForSelector:aSelector];
 	if(signature == nil)
 		[NSException raise:NSInvalidArgumentException format:@"Unkown selector %@ used in constraint.", NSStringFromSelector(aSelector)];
 	NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
@@ -115,8 +115,6 @@
 
 #pragma mark  -
 
-#if NS_BLOCKS_AVAILABLE
-
 @implementation OCMBlockConstraint
 
 - (id)initWithConstraintBlock:(BOOL (^)(id))aBlock;
@@ -126,11 +124,9 @@
 	return self;
 }
 
-- (BOOL)evaluate:(id)value 
+- (BOOL)evaluate:(id)value
 {
 	return block(value);
 }
 
 @end
-
-#endif
