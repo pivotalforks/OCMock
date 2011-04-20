@@ -5,5 +5,7 @@
 Source/build
 
 # Files in the projects
-Source/OCMock.xcodeproj/*.mode1v3
-Source/OCMock.xcodeproj/*.pbxuser
+*.mode1v3
+*.pbxuser
+*.xcworkspace
+xcuserdata
