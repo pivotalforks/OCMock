@@ -281,7 +281,7 @@ static NSString *TestNotification = @"TestNotification";
 	
 }
 
-- (void)testReturnsStubbedIntReturnValue
+- (void)testReturnsStubbedBoxedReturnValue
 {
     int expectedValue = 42;
 	[[[mock stub] andReturnValue:OCMOCK_VALUE(expectedValue)] intValue];
@@ -305,6 +305,53 @@ static NSString *TestNotification = @"TestNotification";
 	id returnValue = [mock uppercaseString];
 	
 	STAssertNil(returnValue, @"Should have returned stubbed value, which is nil.");
+}
+
+- (void)testReturnsStubbedBoolReturnValue
+{
+	[[[mock stub] andReturnBool:YES] hasPrefix:@"somePrefix"];
+
+	BOOL returnValue = [mock hasPrefix:@"somePrefix"];
+
+    STAssertTrue(returnValue, @"Should have returned stubbed value, which is true.");
+}
+
+- (void)testReturnsStubbedIntReturnValue
+{
+    int intValue = 20;
+	[[[mock stub] andReturnInt:intValue] intValue];
+
+    int returnValue = [mock intValue];
+    STAssertEquals(returnValue, intValue, @"Should have returned stubbed value, which is 20 (int).");
+}
+
+- (void)testReturnsStubbedFloatReturnValue
+{
+    float floatValue = 20.0;
+	[[[mock stub] andReturnFloat:floatValue] floatValue];
+
+	float returnValue = [mock floatValue];
+    STAssertEquals(returnValue, floatValue, @"Should have returned stubbed value, which is 20.0 (float).");
+}
+
+- (void)testReturnsStubbedDoubleReturnValue
+{
+    double doubleValue = 20.0;
+	[[[mock stub] andReturnDouble:doubleValue] doubleValue];
+
+	double returnValue = [mock doubleValue];
+    STAssertEquals(returnValue, doubleValue, @"Should have returned stubbed value, which is 20.0 (double).");
+}
+
+- (void)testReturnsStubbedCharReturnValue
+{
+    mock = [OCMockObject mockForClass:[NSNumber class]];
+
+    char charValue = 'c';
+	[[[mock stub] andReturnChar:charValue] charValue];
+
+	char returnValue = [mock charValue];
+    STAssertEquals(returnValue, charValue, @"Should have returned stubbed value, which is c (char).");
 }
 
 
