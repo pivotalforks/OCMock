@@ -183,7 +183,34 @@
 	return YES;
 }
 
+@end
 
 
+@implementation OCMockRecorder (Convenience)
+
+- (id)andReturnBool:(BOOL)aBool
+{
+    return [self andReturnValue:[NSNumber numberWithBool:aBool]];
+}
+
+- (id)andReturnInt:(int)anInt
+{
+    return [self andReturnValue:[NSNumber numberWithInt:anInt]];
+}
+
+- (id)andReturnFloat:(float)aFloat
+{
+    return [self andReturnValue:[NSNumber numberWithFloat:aFloat]];
+}
+
+- (id)andReturnDouble:(double)aDouble
+{
+    return [self andReturnValue:[NSNumber numberWithDouble:aDouble]];
+}
+
+- (id)andReturnChar:(char)aChar
+{
+    return [self andReturnValue:[NSNumber numberWithChar:aChar]];
+}
 
 @end

@@ -30,3 +30,14 @@
 - (NSArray *)invocationHandlers;
 
 @end
+
+
+@interface OCMockRecorder (Convenience)
+
+- (id)andReturnBool:(BOOL)aBool;
+- (id)andReturnInt:(int)anInt;
+- (id)andReturnFloat:(float)aFloat;
+- (id)andReturnDouble:(double)aDouble;
+- (id)andReturnChar:(char)aChar;
+
+@end
